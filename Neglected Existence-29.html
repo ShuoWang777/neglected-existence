@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neglected Existence</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getDatabase, ref as dbRef, push, remove, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+        // Replace with your Firebase project configuration
+        const firebaseConfig = {
+            apiKey: "你的 API Key",
+            authDomain: "neglected-existence.firebaseapp.com",
+            databaseURL: "https://neglected-existence-default-rtdb.firebaseio.com",
+            projectId: "neglected-existence",
+            storageBucket: "neglected-existence.appspot.com",
+            messagingSenderId: "你的 Sender ID",
+            appId: "你的 App ID"
+        };
+
+        let app;
+        try {
+            app = initializeApp(firebaseConfig);
+            console.log("✅ Firebase connected successfully");
+        } catch (error) {
+            console.error("🔥 Firebase not connected!", error.message);
+            alert("Firebase connection failed! Check console for details.");
+        }
+
+        const database = getDatabase(app);
+
+        window.uploadPhoto = async function() {
+            const input = document.getElementById('photoInput');
+            const title = document.getElementById('photoTitle').value.trim();
+            const author = document.getElementById('photoAuthor').value.trim();
+            let username = author || "Anonymous";
+
+            if (input.files.length === 0) {
+                alert('Please select a photo.');
+                return;
+            }
+            if (!title) {
+                alert('Please enter a title.');
+                return;
+            }
+
+            const file = input.files[0];
+            console.log("📷 Selected file:", file);
+            const reader = new FileReader();
+            
+            reader.onload = function (e) {
+                const base64Image = e.target.result;
+                console.log("🖼️ Base64 Encoded Image:", base64Image.substring(0, 50) + "...");
+                push(dbRef(database, 'photos'), { title, username, url: base64Image })
+                    .then((snapshot) => {
+                        console.log("✅ Upload successful, Firebase key:", snapshot.key);
+                        alert("Photo uploaded successfully!");
+                        loadPhotos();
+                    })
+                    .catch(error => {
+                        console.error("🚨 Upload failed:", error.code, error.message);
+                        alert("Upload failed: " + error.code + " - " + error.message);
+                    });
+            };
+            reader.onerror = function (error) {
+                console.error("🚨 Error reading file:", error);
+                alert("Error reading file. Check console for details.");
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.deletePhoto = function(photoKey, photoUsername) {
+            const currentUser = document.getElementById('photoAuthor').value.trim() || "Anonymous";
+            if (currentUser !== photoUsername) {
+                alert("🚫 You can only delete your own photos!");
+                return;
+            }
+            remove(dbRef(database, 'photos/' + photoKey))
+                .then(() => {
+                    console.log("✅ Photo deleted:", photoKey);
+                    alert("Photo deleted successfully!");
+                    loadPhotos();
+                })
+                .catch(error => {
+                    console.error("🚨 Delete failed:", error.code, error.message);
+                    alert("Delete failed: " + error.code + " - " + error.message);
+                });
+        };
+
+        window.loadPhotos = function() {
+            const gallery = document.getElementById('photoGallery');
+            const currentUser = document.getElementById('photoAuthor').value.trim() || "Anonymous";
+
+            onValue(dbRef(database, 'photos'), (snapshot) => {
+                gallery.innerHTML = '';
+                snapshot.forEach(childSnapshot => {
+                    const photo = childSnapshot.val();
+                    const key = childSnapshot.key;
+                    console.log("🖼️ Loading photo:", photo);
+                    const div = document.createElement('div');
+                    div.classList.add('photo-card');
+                    div.innerHTML = `<img src="${photo.url}" alt="Photo">
+                                     <p><strong>${photo.title}</strong></p>
+                                     <p>By ${photo.username}</p>
+                                     ${photo.username === currentUser ? `<button onclick="deletePhoto('${key}', '${photo.username}')">Delete</button>` : ''}`;
+                    gallery.appendChild(div);
+                });
+            }, (error) => {
+                console.error("🚨 Error loading photos:", error.code, error.message);
+            });
+        };
+
+        window.onload = loadPhotos;
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .photo-card {
+            width: 220px;
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .photo-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="photoSection">
+        <h2>Upload a Photo</h2>
+        <input type="file" id="photoInput" accept="image/*">
+        <input type="text" id="photoTitle" placeholder="Photo Title">
+        <input type="text" id="photoAuthor" placeholder="Author Name">
+        <button onclick="uploadPhoto()">Upload</button>
+        <div class="gallery" id="photoGallery"></div>
+    </div>
+</body>
+</html>
