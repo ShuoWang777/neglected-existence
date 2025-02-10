@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neglected Existence</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Neglected Existence</h1>
+        <img src="cover.jpg" alt="Cover Image" class="cover">
+    </div>
+
+    <div class="upload-container">
+        <h2>Upload a Photo</h2>
+        <input type="file" id="fileInput">
+        <input type="text" id="photoTitle" placeholder="Photo Title">
+        <input type="text" id="authorName" placeholder="Author Name">
+        <button onclick="uploadFile()">Upload</button>
+    </div>
+
+    <div id="gallery"></div>
+</body>
+</html>
