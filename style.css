@@ -1,0 +1,85 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    background-color: #cde6f5;
+    padding: 20px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.cover {
+    width: 200px;
+    margin-top: 10px;
+}
+
+.upload-container {
+    background: white;
+    padding: 20px;
+    margin: 20px auto;
+    width: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+input {
+    display: block;
+    width: 80%;
+    margin: 10px auto;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+#gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.photo-card {
+    background: white;
+    padding: 10px;
+    margin: 15px;
+    width: 250px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.photo-card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.photo-card h3 {
+    margin: 10px 0 5px;
+    font-size: 16px;
+}
+
+.photo-card p {
+    margin: 0;
+    color: gray;
+    font-size: 14px;
+}
